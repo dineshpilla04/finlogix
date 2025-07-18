@@ -1,0 +1,29 @@
+body {
+  font-family: Arial, sans-serif;
+  background-color: #f0f2f5;
+  margin: 0;
+  padding: 0;
+}
+form, .card {
+  background: white;
+  padding: 1.5rem;
+  max-width: 400px;
+  margin: 1rem auto;
+  border-radius: 8px;
+  box-shadow: 0 0 8px rgba(0, 0, 0, 0.1);
+}
+input, select, button {
+  width: 100%;
+  padding: 0.5rem;
+  margin-top: 0.5rem;
+}
+button {
+  background: #007bff;
+  color: white;
+  border: none;
+  cursor: pointer;
+}
+ul {
+  list-style: none;
+  padding: 0;
+}
