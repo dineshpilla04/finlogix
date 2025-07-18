@@ -1,0 +1,8 @@
+Flask
+Flask-SQLAlchemy
+Flask-JWT-Extended
+Flask-SocketIO
+flask-cors
+psycopg2-binary
+openai
+eventlet
