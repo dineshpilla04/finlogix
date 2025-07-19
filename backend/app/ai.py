@@ -38,6 +38,9 @@ def budget_advice():
     gemini_api_url = os.getenv('GEMINI_API_URL')
     gemini_api_key = os.getenv('GEMINI_API_KEY')
 
+    current_app.logger.info(f"GEMINI_API_URL: {gemini_api_url}")
+    current_app.logger.info(f"GEMINI_API_KEY: {'set' if gemini_api_key else 'not set'}")
+
     if not gemini_api_url or not gemini_api_key:
         return jsonify({'advice': 'Gemini API credentials not configured'}), 500
 
@@ -72,6 +75,9 @@ def chat():
 
     gemini_api_url = os.getenv('GEMINI_API_URL')
     gemini_api_key = os.getenv('GEMINI_API_KEY')
+
+    current_app.logger.info(f"GEMINI_API_URL: {gemini_api_url}")
+    current_app.logger.info(f"GEMINI_API_KEY: {'set' if gemini_api_key else 'not set'}")
 
     if not gemini_api_url or not gemini_api_key:
         return jsonify({'error': 'Gemini API credentials not configured'}), 500
