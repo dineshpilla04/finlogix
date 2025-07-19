@@ -59,11 +59,13 @@ def create_app():
     from .dashboard import dashboard_bp
     from .ai import ai_bp
     from .admin import admin_bp
+    from .audio import audio_bp
 
     app.register_blueprint(auth_bp, url_prefix='/auth')
     app.register_blueprint(transactions_bp, url_prefix='/transactions')
     app.register_blueprint(dashboard_bp, url_prefix='/dashboard')
     app.register_blueprint(ai_bp, url_prefix='/ai')
+    app.register_blueprint(audio_bp, url_prefix='/audio')
     app.register_blueprint(admin_bp, url_prefix='/admin')
 
     return app
