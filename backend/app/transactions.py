@@ -5,9 +5,11 @@ from . import db
 
 transactions_bp = Blueprint('transactions', __name__)
 
-@transactions_bp.route('/', methods=['POST'])
+@transactions_bp.route('/', methods=['POST', 'OPTIONS'])
 @jwt_required()
 def add_transaction():
+    if request.method == 'OPTIONS':
+        return '', 204
     user_id = get_jwt_identity()
     data = request.get_json()
     amount = data.get('amount')
@@ -58,19 +60,19 @@ def delete_transaction(transaction_id):
     db.session.commit()
     return jsonify({'msg': 'Transaction deleted'})
 
-@transactions_bp.route('/', methods=['GET'])
+@transactions_bp.route('/', methods=['GET', 'OPTIONS'])
 @jwt_required()
 def get_transactions():
+    if request.method == 'OPTIONS':
+        return '', 204  # Respond OK to preflight
     user_id = get_jwt_identity()
     transactions = Transaction.query.filter_by(user_id=user_id).order_by(Transaction.timestamp.desc()).all()
-    result = []
-    for t in transactions:
-        result.append({
-            'id': t.id,
-            'amount': t.amount,
-            'category': t.category,
-            'note': t.note,
-            'type': t.type,
-            'timestamp': t.timestamp.isoformat()
-        })
+    result = [{
+        'id': t.id,
+        'amount': t.amount,
+        'category': t.category,
+        'note': t.note,
+        'type': t.type,
+        'timestamp': t.timestamp.isoformat()
+    } for t in transactions]
     return jsonify(result)
