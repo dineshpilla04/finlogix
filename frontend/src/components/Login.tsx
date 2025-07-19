@@ -69,6 +69,17 @@ const Login: React.FC = () => {
           Login
         </button>
       </form>
+      <div className="mt-4 text-center">
+        <p>
+          Don't have an account?{' '}
+          <button
+            onClick={() => navigate('/register')}
+            className="text-blue-600 hover:underline"
+          >
+            Register
+          </button>
+        </p>
+      </div>
     </div>
   );
 };

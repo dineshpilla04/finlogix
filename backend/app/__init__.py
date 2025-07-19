@@ -22,12 +22,23 @@ def create_app():
             "origins": [
                 "http://localhost:3000",
                 "https://localhost:3000",
-                "http://finlogix-e0jc.onrender.com",
                 "https://finlogix-e0jc.onrender.com"
             ]
         }
     })
+
+    @app.before_request
+    def log_request_info():
+        from flask import request
+        app.logger.info(f"Request: {request.method} {request.url}")
+        app.logger.info(f"Headers: {dict(request.headers)}")
+
     db.init_app(app)
+    with app.app_context():
+        try:
+            db.create_all()
+        except Exception as e:
+            app.logger.error(f"Error creating tables: {e}")
     jwt.init_app(app)
     socketio.init_app(app)
 
@@ -43,5 +54,16 @@ def create_app():
     app.register_blueprint(dashboard_bp, url_prefix='/dashboard')
     app.register_blueprint(ai_bp, url_prefix='/ai')
     app.register_blueprint(admin_bp, url_prefix='/admin')
+
+    @app.before_request
+    def handle_options_requests():
+        from flask import request, make_response
+        if request.method == 'OPTIONS':
+            response = make_response()
+            response.headers.add('Access-Control-Allow-Origin', request.headers.get('Origin', '*'))
+            response.headers.add('Access-Control-Allow-Methods', 'GET,POST,PUT,DELETE,OPTIONS')
+            response.headers.add('Access-Control-Allow-Headers', 'Authorization,Content-Type')
+            response.headers.add('Access-Control-Allow-Credentials', 'true')
+            return response
 
     return app
