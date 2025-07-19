@@ -1,4 +1,5 @@
 from flask import Flask
+from werkzeug.middleware.proxy_fix import ProxyFix
 from flask_sqlalchemy import SQLAlchemy
 from flask_jwt_extended import JWTManager
 from flask_socketio import SocketIO
@@ -16,17 +17,18 @@ def create_app():
     app.config['JWT_SECRET_KEY'] = os.getenv('JWT_SECRET_KEY')
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
-    # Update CORS to allow specific origins for frontend and deployed URLs
-    CORS(app, supports_credentials=True, resources={
-        r"/*": {
-            "origins": [
-                "http://localhost:3000",
-                "https://localhost:3000",
-                "https://finlogix-e0jc.onrender.com"
-            ]
-        }
-    })
+    # Fix proxy headers (important for HTTPS on Render)
+    app.wsgi_app = ProxyFix(app.wsgi_app, x_proto=1, x_host=1)
 
+    # ✅ Correct CORS setup
+    CORS(app,
+         supports_credentials=True,
+         resources={r"/*": {"origins": [
+             "http://localhost:3000",
+             "https://finlogix-gray.vercel.app"
+         ]}})
+
+    # 🔍 Log every request (optional but useful)
     @app.before_request
     def log_request_info():
         from flask import request
@@ -40,10 +42,11 @@ def create_app():
             db.create_all()
         except Exception as e:
             app.logger.error(f"Error creating tables: {e}")
+
     jwt.init_app(app)
     socketio.init_app(app)
 
-
+    # Register Blueprints
     from .auth import auth_bp
     from .transactions import transactions_bp
     from .dashboard import dashboard_bp
@@ -55,16 +58,5 @@ def create_app():
     app.register_blueprint(dashboard_bp, url_prefix='/dashboard')
     app.register_blueprint(ai_bp, url_prefix='/ai')
     app.register_blueprint(admin_bp, url_prefix='/admin')
-
-    @app.before_request
-    def handle_options_requests():
-        from flask import request, make_response
-        if request.method == 'OPTIONS':
-            response = make_response()
-            response.headers.add('Access-Control-Allow-Origin', request.headers.get('Origin', '*'))
-            response.headers.add('Access-Control-Allow-Methods', 'GET,POST,PUT,DELETE,OPTIONS')
-            response.headers.add('Access-Control-Allow-Headers', 'Authorization,Content-Type')
-            response.headers.add('Access-Control-Allow-Credentials', 'true')
-            return response
 
     return app

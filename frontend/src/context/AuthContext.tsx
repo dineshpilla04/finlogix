@@ -14,7 +14,9 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [token, setToken] = useState<string | null>(localStorage.getItem('token'));
+  // Initialize with the generated token for testing
+  const initialToken = localStorage.getItem('token') || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxIiwiaWF0IjoxNzUyOTMwMDM2LCJleHAiOjE3NTMwMTY0MzZ9.5eb1Kkcmo9O2_GQZJX-2bQJYLVGDEJisxYy-IIA8VXo';
+  const [token, setToken] = useState<string | null>(initialToken);
 
   useEffect(() => {
     if (token) {
