@@ -2,6 +2,7 @@ import * as React from 'react';
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useAuth } from '../context/AuthContext.tsx';
+import { useNavigate } from 'react-router-dom';
 
 interface Transaction {
   id: number;
@@ -20,6 +21,7 @@ const Transactions: React.FC = () => {
   const [type, setType] = useState<'income' | 'expense'>('expense');
   const [error, setError] = useState('');
   const { token } = useAuth();
+  const navigate = useNavigate();
 
   const fetchTransactions = async () => {
     try {
@@ -68,6 +70,14 @@ const Transactions: React.FC = () => {
 
   return (
     <div className="p-4 max-w-md mx-auto">
+      <nav className="mb-4">
+        <button
+          onClick={() => navigate('/dashboard')}
+          className="text-blue-600 hover:underline"
+        >
+          &larr; Back to Dashboard
+        </button>
+      </nav>
       <h2 className="text-2xl font-bold mb-4">Transactions</h2>
       <form onSubmit={handleAddTransaction} className="mb-6">
         {error && <p className="text-red-600 mb-2">{error}</p>}

@@ -17,7 +17,8 @@ def create_app():
     app.config['JWT_SECRET_KEY'] = os.getenv('JWT_SECRET_KEY')
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
-    # Fix proxy headers (important for HTTPS on Render)
+    # Remove duplicate Flask app instantiation
+    # app = Flask(__name__)
     app.wsgi_app = ProxyFix(app.wsgi_app, x_proto=1, x_host=1)
 
     # ✅ Correct CORS setup
@@ -29,6 +30,12 @@ def create_app():
          ]}})
 
     # 🔍 Log every request (optional but useful)
+    @app.before_request
+    def skip_options_preflight():
+        from flask import request
+        if request.method == 'OPTIONS':
+            return '', 200
+
     @app.before_request
     def log_request_info():
         from flask import request
