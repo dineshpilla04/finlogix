@@ -16,20 +16,21 @@ def create_app():
     app.config['JWT_SECRET_KEY'] = os.getenv('JWT_SECRET_KEY')
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
-    CORS(app, supports_credentials=True, resources={r"/*": {"origins": "*"}})
+    # Update CORS to allow specific origins for frontend and deployed URLs
+    CORS(app, supports_credentials=True, resources={
+        r"/*": {
+            "origins": [
+                "http://localhost:3000",
+                "https://localhost:3000",
+                "http://finlogix-e0jc.onrender.com",
+                "https://finlogix-e0jc.onrender.com"
+            ]
+        }
+    })
     db.init_app(app)
     jwt.init_app(app)
     socketio.init_app(app)
 
-    @app.before_request
-    def handle_options_requests():
-        from flask import request, make_response
-        if request.method == 'OPTIONS':
-            response = make_response()
-            response.headers.add('Access-Control-Allow-Origin', '*')
-            response.headers.add('Access-Control-Allow-Methods', 'GET,POST,PUT,DELETE,OPTIONS')
-            response.headers.add('Access-Control-Allow-Headers', 'Authorization,Content-Type')
-            return response
 
     from .auth import auth_bp
     from .transactions import transactions_bp
