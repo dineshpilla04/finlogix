@@ -11,7 +11,7 @@ socketio = SocketIO(cors_allowed_origins="*")
 
 def create_app():
     app = Flask(__name__)
-    app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL')
+    app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:QtAVXcholCNurSxVtHElBECMyvuNiwvv@mainline.proxy.rlwy.net:31816/railway'
     app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
     app.config['JWT_SECRET_KEY'] = os.getenv('JWT_SECRET_KEY')
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
@@ -35,6 +35,7 @@ def create_app():
 
     db.init_app(app)
     with app.app_context():
+        from . import models
         try:
             db.create_all()
         except Exception as e:
