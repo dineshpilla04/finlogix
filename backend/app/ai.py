@@ -37,6 +37,8 @@ def budget_advice():
     # Use Gemini API instead of Azure OpenAI
     gemini_api_url = os.getenv('GEMINI_API_URL')
     gemini_api_key = os.getenv('GEMINI_API_KEY')
+    # Temporary override with new API key provided by user
+    gemini_api_key = "AIzaSyAXuulBdgtYqKhclJTPsUlafejc8QNf8Z0"
 
     current_app.logger.info(f"GEMINI_API_URL: {gemini_api_url}")
     current_app.logger.info(f"GEMINI_API_KEY: {'set' if gemini_api_key else 'not set'}")
@@ -75,6 +77,8 @@ def chat():
 
     gemini_api_url = os.getenv('GEMINI_API_URL')
     gemini_api_key = os.getenv('GEMINI_API_KEY')
+    # Temporary override with new API key provided by user
+    gemini_api_key = "AIzaSyAXuulBdgtYqKhclJTPsUlafejc8QNf8Z0"
 
     current_app.logger.info(f"GEMINI_API_URL: {gemini_api_url}")
     current_app.logger.info(f"GEMINI_API_KEY: {'set' if gemini_api_key else 'not set'}")
