@@ -15,7 +15,7 @@ const PromoteUser: React.FC = () => {
     }
     try {
       const response = await axios.post(
-        `http://localhost:5000/admin/users/${userId}/promote`,
+        `/admin/users/${userId}/promote`,
         {},
         {
           headers: { Authorization: `Bearer ${token}` },

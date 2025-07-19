@@ -15,7 +15,7 @@ const Login: React.FC = () => {
     e.preventDefault();
     setError('');
     try {
-      const response = await axios.post('http://localhost:5000/auth/login', { username, password });
+      const response = await axios.post('/auth/login', { username, password });
       const token = response.data.access_token;
       if (token) {
         login(token);
