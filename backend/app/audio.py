@@ -9,7 +9,7 @@ from datetime import datetime
 audio_bp = Blueprint('audio', __name__)
 
 UPLOAD_FOLDER = 'uploads/audio_notes'
-ALLOWED_EXTENSIONS = {'wav', 'mp3', 'm4a', 'ogg'}
+ALLOWED_EXTENSIONS = {'wav', 'mp3', 'm4a', 'ogg', 'webm'}
 
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
@@ -22,6 +22,12 @@ def upload_audio():
     file = request.files['file']
     if file.filename == '':
         return jsonify({'error': 'No selected file'}), 400
+
+    # Debug logging for filename and extension
+    current_app.logger.debug(f"Received file: {file.filename}")
+    ext = file.filename.rsplit('.', 1)[1].lower() if '.' in file.filename else ''
+    current_app.logger.debug(f"File extension: {ext}")
+
     transaction_id = request.form.get('transaction_id', type=int)
     if file and allowed_file(file.filename):
         filename = secure_filename(file.filename)

@@ -6,6 +6,18 @@ import datetime
 
 auth_bp = Blueprint('auth', __name__)
 
+def admin_required(func):
+    from functools import wraps
+    from flask_jwt_extended import get_jwt_identity
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        user_id = get_jwt_identity()
+        user = User.query.get(user_id)
+        if not user or not user.is_admin:
+            return jsonify({'msg': 'Admin access required'}), 403
+        return func(*args, **kwargs)
+    return wrapper
+
 @auth_bp.route('/register', methods=['POST'])
 def register():
     data = request.get_json()
@@ -20,6 +32,14 @@ def register():
 
     user = User(username=username, email=email)
     user.set_password(password)
+    # Set default budget goals on user creation
+    user.default_budget_goals = {
+        "housing": 1000,
+        "food": 300,
+        "transportation": 150,
+        "entertainment": 100,
+        "savings": 200
+    }
     db.session.add(user)
     db.session.commit()
 
@@ -67,3 +87,20 @@ def update_profile():
 
     db.session.commit()
     return jsonify({'msg': 'Profile updated successfully'})
+
+@auth_bp.route('/admin/users', methods=['GET'])
+@jwt_required()
+@admin_required
+def get_all_users():
+    users = User.query.all()
+    result = []
+    for user in users:
+        result.append({
+            'id': user.id,
+            'username': user.username,
+            'email': user.email,
+            'income_type': user.income_type,
+            'default_budget_goals': user.default_budget_goals,
+            'is_admin': user.is_admin
+        })
+    return jsonify(result)

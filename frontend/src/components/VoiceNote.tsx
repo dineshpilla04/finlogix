@@ -55,11 +55,18 @@ const VoiceNote: React.FC<VoiceNoteProps> = ({ transactionId, onUploadSuccess })
     }
 
     try {
-      const response = await fetch('/audio/upload', {
+      const token = localStorage.getItem('token');
+      const response = await fetch('https://finlogix-e0jc.onrender.com/audio/upload', {
         method: 'POST',
         body: formData,
+        headers: {
+          Authorization: token ? `Bearer ${token}` : '',
+        },
         credentials: 'include',
       });
+      console.log('Upload response status:', response.status);
+      const responseText = await response.text();
+      console.log('Upload response text:', responseText);
       if (response.ok) {
         alert('Audio uploaded successfully!');
         setAudioBlob(null);
@@ -68,7 +75,7 @@ const VoiceNote: React.FC<VoiceNoteProps> = ({ transactionId, onUploadSuccess })
           onUploadSuccess();
         }
       } else {
-        alert('Failed to upload audio.');
+        alert('Failed to upload audio: ' + responseText);
       }
     } catch (error) {
       alert('Error uploading audio: ' + error);

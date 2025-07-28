@@ -37,8 +37,6 @@ def budget_advice():
     # Use Gemini API instead of Azure OpenAI
     gemini_api_url = os.getenv('GEMINI_API_URL')
     gemini_api_key = os.getenv('GEMINI_API_KEY')
-    # Temporary override with new API key provided by user
-    gemini_api_key = "AIzaSyAXuulBdgtYqKhclJTPsUlafejc8QNf8Z0"
 
     current_app.logger.info(f"GEMINI_API_URL: {gemini_api_url}")
     current_app.logger.info(f"GEMINI_API_KEY: {'set' if gemini_api_key else 'not set'}")
@@ -46,8 +44,11 @@ def budget_advice():
     if not gemini_api_url or not gemini_api_key:
         return jsonify({'advice': 'Gemini API credentials not configured'}), 500
 
+    # Check if the API key should be used as a Bearer token or as a query parameter
+    # Assuming API key is used as a query parameter based on error message
+    url_with_key = f"{gemini_api_url}?key={gemini_api_key}"
+
     headers = {
-        'Authorization': f'Bearer {gemini_api_key}',
         'Content-Type': 'application/json'
     }
     data = {
@@ -57,10 +58,11 @@ def budget_advice():
     }
 
     try:
-        response = requests.post(gemini_api_url, json=data, headers=headers)
+        response = requests.post(url_with_key, json=data, headers=headers)
         response.raise_for_status()
         advice = response.json().get('choices', [{}])[0].get('text', 'No advice returned')
     except Exception as e:
+        current_app.logger.error(f"Error generating advice: {str(e)}")
         advice = f"Error generating advice: {str(e)}"
 
     return jsonify({'advice': advice})
@@ -77,8 +79,6 @@ def chat():
 
     gemini_api_url = os.getenv('GEMINI_API_URL')
     gemini_api_key = os.getenv('GEMINI_API_KEY')
-    # Temporary override with new API key provided by user
-    gemini_api_key = "AIzaSyAXuulBdgtYqKhclJTPsUlafejc8QNf8Z0"
 
     current_app.logger.info(f"GEMINI_API_URL: {gemini_api_url}")
     current_app.logger.info(f"GEMINI_API_KEY: {'set' if gemini_api_key else 'not set'}")
@@ -86,8 +86,9 @@ def chat():
     if not gemini_api_url or not gemini_api_key:
         return jsonify({'error': 'Gemini API credentials not configured'}), 500
 
+    url_with_key = f"{gemini_api_url}?key={gemini_api_key}"
+
     headers = {
-        'Authorization': f'Bearer {gemini_api_key}',
         'Content-Type': 'application/json'
     }
     payload = {
@@ -97,10 +98,11 @@ def chat():
     }
 
     try:
-        response = requests.post(gemini_api_url, json=payload, headers=headers)
+        response = requests.post(url_with_key, json=payload, headers=headers)
         response.raise_for_status()
         reply = response.json().get('choices', [{}])[0].get('text', 'No response')
     except Exception as e:
+        current_app.logger.error(f"Error generating response: {str(e)}")
         reply = f"Error generating response: {str(e)}"
 
     return jsonify({'reply': reply})

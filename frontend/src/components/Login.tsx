@@ -79,6 +79,15 @@ const Login: React.FC = () => {
             Register
           </button>
         </p>
+        <p className="mt-2">
+          Are you an admin?{' '}
+          <button
+            onClick={() => navigate('/promote-user')}
+            className="text-blue-600 hover:underline"
+          >
+            Admin Login
+          </button>
+        </p>
       </div>
     </div>
   );
